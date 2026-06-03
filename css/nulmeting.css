@@ -1,0 +1,1327 @@
+/* AFAS Successcan - Beheerscan Styling */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@700;900&display=swap');
+
+:root {
+    --afas-blauw: #005FAA;
+    --afas-blauw-donker: #003D6B;
+    --afas-blauw-licht: #E3F2FD;
+    --groen: #43A047;
+    --oranje: #FF9800;
+    --rood: #E53935;
+    --grijs-100: #F5F5F5;
+    --grijs-200: #EEEEEE;
+    --grijs-300: #E0E0E0;
+    --grijs-500: #9E9E9E;
+    --grijs-700: #616161;
+    --grijs-900: #212121;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Variables */
+:root.dark {
+    --grijs-100: #1a1a2e;
+    --grijs-200: #232340;
+    --grijs-300: #2d2d4a;
+    --grijs-500: #8888aa;
+    --grijs-700: #b0b0cc;
+    --grijs-900: #e8e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Dark Mode Toggle */
+.darkmode-toggle {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.darkmode-toggle:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.darkmode-icon {
+    font-size: 1.2rem;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--grijs-100);
+    color: var(--grijs-900);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Header */
+.app-header {
+    background: linear-gradient(135deg, var(--afas-blauw), var(--afas-blauw-donker));
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+}
+
+.app-header .logo {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+}
+
+.app-header .subtitle {
+    opacity: 0.85;
+    font-size: 0.9rem;
+}
+
+/* Progress Bar */
+.progress-container {
+    background: white;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--grijs-300);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.progress-track {
+    position: absolute;
+    top: 50%;
+    left: 24px;
+    right: 24px;
+    height: 3px;
+    background: var(--grijs-300);
+    transform: translateY(-50%);
+    border-radius: 2px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--afas-blauw);
+    border-radius: 2px;
+    transition: width var(--transition);
+    width: 0%;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.progress-step .step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--grijs-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--grijs-500);
+    transition: all var(--transition);
+}
+
+.progress-step.active .step-circle {
+    border-color: var(--afas-blauw);
+    background: var(--afas-blauw);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(0, 95, 170, 0.15);
+}
+
+.progress-step.completed .step-circle {
+    border-color: var(--groen);
+    background: var(--groen);
+    color: white;
+}
+
+.progress-step .step-label {
+    font-size: 0.7rem;
+    color: var(--grijs-500);
+    text-align: center;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.progress-step.active .step-label {
+    color: var(--afas-blauw);
+    font-weight: 600;
+}
+
+/* Main Content */
+.wizard-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+#wizard-content {
+    transition: opacity 200ms ease, transform 200ms ease;
+}
+
+#wizard-content.step-exit {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+#wizard-content.step-enter {
+    animation: stepIn 300ms ease forwards;
+}
+
+@keyframes stepIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Intro Section */
+.intro-section {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+}
+
+.intro-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.intro-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.intro-header h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    color: var(--afas-blauw);
+    margin-bottom: 8px;
+}
+
+.intro-description {
+    color: var(--grijs-700);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--grijs-700);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--grijs-300);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color var(--transition);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--afas-blauw);
+}
+
+.scan-overzicht {
+    margin-top: 32px;
+}
+
+.scan-overzicht h3 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: var(--grijs-700);
+}
+
+.categorie-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.categorie-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--grijs-100);
+    border-radius: var(--radius-sm);
+}
+
+.categorie-preview .cat-icon {
+    font-size: 1.5rem;
+}
+
+.categorie-preview strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.categorie-preview .cat-count {
+    font-size: 0.8rem;
+    color: var(--grijs-500);
+}
+
+/* Categorie Section */
+.categorie-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.categorie-header {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-left: 5px solid;
+    box-shadow: var(--shadow-sm);
+}
+
+.cat-header-icon {
+    font-size: 2rem;
+}
+
+.categorie-header h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.cat-subtitle {
+    font-size: 0.85rem;
+    color: var(--grijs-500);
+}
+
+/* Stelling Card */
+.stelling-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    gap: 20px;
+    transition: box-shadow var(--transition);
+}
+
+.stelling-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.stelling-nummer {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.stelling-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stelling-titel {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--grijs-900);
+}
+
+.stelling-toelichting {
+    font-size: 0.88rem;
+    color: var(--grijs-700);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* Score Buttons */
+.score-selectie {
+    margin-bottom: 16px;
+}
+
+.score-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--grijs-700);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.score-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.score-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 20px;
+    border: 2px solid var(--grijs-300);
+    border-radius: var(--radius-md);
+    background: white;
+    cursor: pointer;
+    transition: all var(--transition);
+    min-width: 100px;
+}
+
+.score-btn:hover {
+    border-color: var(--btn-kleur);
+    background: var(--btn-kleur-licht);
+}
+
+.score-btn.active {
+    border-color: var(--btn-kleur);
+    background: var(--btn-kleur-licht);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--btn-kleur) 15%, transparent);
+}
+
+.score-icoon {
+    font-size: 1.8rem;
+}
+
+.score-waarde {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--btn-kleur);
+}
+
+.score-text {
+    font-size: 0.72rem;
+    color: var(--grijs-700);
+}
+
+.score-beschrijving {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--grijs-700);
+    font-style: italic;
+    min-height: 1.4em;
+}
+
+/* Bevindingen */
+.bevindingen-sectie label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--grijs-700);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.bevindingen-sectie textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--grijs-300);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color var(--transition);
+}
+
+.bevindingen-sectie textarea:focus {
+    outline: none;
+    border-color: var(--afas-blauw);
+}
+
+/* Navigation */
+.wizard-nav {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ========================================
+   SCORECARD OVERZICHT
+   ======================================== */
+.scorecard-overzicht {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+.scorecard-header {
+    background: linear-gradient(135deg, var(--afas-blauw-donker), var(--afas-blauw));
+    color: white;
+    padding: 24px 32px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 24px;
+}
+
+.scorecard-titel h1 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.scorecard-subtitel {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.scorecard-legenda-top {
+    display: flex;
+    gap: 16px;
+    font-size: 0.8rem;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.legenda-icoon {
+    font-size: 1.2rem;
+}
+
+.scorecard-totaal-box {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    text-align: center;
+}
+
+.scorecard-totaal-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.85;
+}
+
+.scorecard-totaal-waarde {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+}
+
+.scorecard-body {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 0;
+}
+
+.scorecard-stellingen {
+    padding: 24px;
+}
+
+.scorecard-categorie {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--grijs-200);
+    padding-bottom: 16px;
+}
+
+.scorecard-categorie:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.scorecard-cat-label {
+    border-left: 4px solid;
+    padding-left: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.scorecard-cat-icoon {
+    font-size: 1.5rem;
+}
+
+.scorecard-cat-label strong {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: var(--grijs-900);
+    line-height: 1.3;
+}
+
+.scorecard-cat-stellingen {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scorecard-stelling-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+}
+
+.scorecard-nr {
+    width: 24px;
+    height: 24px;
+    background: var(--afas-blauw);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.scorecard-stelling-tekst {
+    font-size: 0.82rem;
+    color: var(--grijs-900);
+    line-height: 1.3;
+}
+
+.scorecard-weer-iconen {
+    display: flex;
+    gap: 8px;
+}
+
+.scorecard-weer {
+    font-size: 1.4rem;
+    opacity: 0.25;
+    transition: all var(--transition);
+}
+
+.scorecard-weer.selected {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Sidebar */
+.scorecard-sidebar {
+    background: var(--grijs-100);
+    padding: 24px 20px;
+    border-left: 1px solid var(--grijs-200);
+}
+
+.scorecard-sidebar h4 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    color: var(--afas-blauw);
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.scorecard-uitleg {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.scorecard-uitleg-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    background: white;
+}
+
+.scorecard-uitleg-item.rood { border-left: 3px solid var(--rood); }
+.scorecard-uitleg-item.oranje { border-left: 3px solid var(--oranje); }
+.scorecard-uitleg-item.groen { border-left: 3px solid var(--groen); }
+
+.uitleg-icoon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.scorecard-uitleg-item strong {
+    font-size: 0.7rem;
+    letter-spacing: 0.3px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.scorecard-uitleg-item p {
+    font-size: 0.7rem;
+    color: var(--grijs-700);
+    line-height: 1.4;
+}
+
+.scorecard-tip {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    border-left: 3px solid var(--afas-blauw);
+}
+
+.scorecard-tip strong {
+    font-size: 0.75rem;
+    color: var(--afas-blauw);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.scorecard-tip p {
+    font-size: 0.7rem;
+    color: var(--grijs-700);
+    line-height: 1.4;
+}
+
+/* Footer met score-ranges */
+.scorecard-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 2px solid var(--grijs-300);
+}
+
+.scorecard-range {
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: white;
+}
+
+.scorecard-range.rood { background: var(--rood); }
+.scorecard-range.oranje { background: var(--oranje); }
+.scorecard-range.groen { background: var(--groen); }
+
+.btn-nav {
+    padding: 12px 28px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+#btn-prev {
+    background: white;
+    color: var(--grijs-700);
+    border: 2px solid var(--grijs-300);
+}
+
+#btn-prev:hover {
+    border-color: var(--afas-blauw);
+    color: var(--afas-blauw);
+}
+
+#btn-next {
+    background: var(--afas-blauw);
+    color: white;
+}
+
+#btn-next:hover {
+    background: var(--afas-blauw-donker);
+    box-shadow: var(--shadow-md);
+}
+
+/* Resultaat Section */
+.resultaat-section {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.resultaat-header {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resultaat-header h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    color: var(--afas-blauw);
+}
+
+.resultaat-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+    color: var(--grijs-700);
+}
+
+.meta-klant {
+    font-weight: 600;
+}
+
+.resultaat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.resultaat-chart, .resultaat-totaal {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.resultaat-chart h3, .score-tabel h3, .detail-scores h3, .conclusie-sectie h3 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--grijs-900);
+}
+
+.resultaat-chart canvas {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.totaal-score-card {
+    text-align: center;
+    padding: 24px;
+    border: 3px solid;
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+}
+
+.totaal-percentage {
+    font-family: 'Roboto', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.totaal-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 8px;
+    color: var(--grijs-900);
+}
+
+.totaal-punten {
+    font-size: 0.85rem;
+    color: var(--grijs-500);
+    margin-top: 4px;
+}
+
+.totaal-beschrijving {
+    font-size: 0.9rem;
+    color: var(--grijs-700);
+    text-align: center;
+}
+
+/* Score Table */
+.score-tabel {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.score-tabel table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.score-tabel th, .score-tabel td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--grijs-200);
+}
+
+.score-tabel th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--grijs-500);
+    font-weight: 600;
+}
+
+.cat-icon-small {
+    margin-right: 8px;
+}
+
+.score-bar-container {
+    position: relative;
+    height: 24px;
+    background: var(--grijs-200);
+    border-radius: 12px;
+    overflow: hidden;
+    min-width: 120px;
+}
+
+.score-bar {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-bar-label {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Detail Scores */
+.detail-scores {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.detail-categorie {
+    margin-bottom: 24px;
+}
+
+.detail-categorie h4 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--grijs-200);
+}
+
+.detail-stelling {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--grijs-100);
+}
+
+.detail-stelling:last-child {
+    border-bottom: none;
+}
+
+.detail-stelling-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.detail-titel {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.detail-score-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.detail-bevinding {
+    font-size: 0.85rem;
+    color: var(--grijs-700);
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: var(--grijs-100);
+    border-radius: var(--radius-sm);
+}
+
+.detail-aanbevelingen {
+    font-size: 0.85rem;
+    color: var(--grijs-700);
+}
+
+.detail-aanbevelingen strong {
+    color: var(--afas-blauw);
+}
+
+.detail-aanbevelingen ul {
+    margin: 6px 0 0 20px;
+}
+
+.detail-aanbevelingen li {
+    margin-bottom: 4px;
+}
+
+/* Conclusie */
+.conclusie-sectie {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    border-left: 5px solid var(--afas-blauw);
+}
+
+.conclusie-sectie p {
+    font-size: 0.95rem;
+    color: var(--grijs-700);
+    line-height: 1.7;
+}
+
+/* Export Buttons */
+.export-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-export {
+    padding: 14px 32px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-pdf {
+    background: var(--afas-blauw);
+    color: white;
+}
+
+.btn-pdf:hover {
+    background: var(--afas-blauw-donker);
+    box-shadow: var(--shadow-md);
+}
+
+/* Validation Toast */
+.validation-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--rood);
+    color: white;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: all 300ms ease;
+    z-index: 1000;
+}
+
+.validation-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ========================================
+   DARK MODE OVERRIDES
+   ======================================== */
+:root.dark .progress-container {
+    background: #1e1e35;
+    border-bottom-color: #2d2d4a;
+}
+
+:root.dark .progress-track {
+    background: #2d2d4a;
+}
+
+:root.dark .progress-step .step-circle {
+    background: #1e1e35;
+    border-color: #2d2d4a;
+    color: #8888aa;
+}
+
+:root.dark .progress-step.active .step-circle {
+    background: var(--afas-blauw);
+    border-color: var(--afas-blauw);
+    color: white;
+}
+
+:root.dark .progress-step.completed .step-circle {
+    background: var(--groen);
+    border-color: var(--groen);
+    color: white;
+}
+
+:root.dark .intro-section,
+:root.dark .stelling-card,
+:root.dark .categorie-header,
+:root.dark .resultaat-header,
+:root.dark .resultaat-chart,
+:root.dark .resultaat-totaal,
+:root.dark .score-tabel,
+:root.dark .detail-scores,
+:root.dark .conclusie-sectie {
+    background: #1e1e35;
+}
+
+:root.dark .form-group input,
+:root.dark .bevindingen-sectie textarea {
+    background: #252545;
+    border-color: #3a3a5c;
+    color: #e8e8f0;
+}
+
+:root.dark .form-group input:focus,
+:root.dark .bevindingen-sectie textarea:focus {
+    border-color: #4a9eff;
+}
+
+:root.dark .form-group input::placeholder,
+:root.dark .bevindingen-sectie textarea::placeholder {
+    color: #666688;
+}
+
+:root.dark .categorie-preview {
+    background: #252545;
+}
+
+:root.dark .score-btn {
+    background: #252545;
+    border-color: #3a3a5c;
+}
+
+:root.dark .score-btn .score-text {
+    color: #b0b0cc;
+}
+
+:root.dark .score-tabel th {
+    color: #8888aa;
+}
+
+:root.dark .score-tabel th,
+:root.dark .score-tabel td {
+    border-bottom-color: #2d2d4a;
+}
+
+:root.dark .score-bar-container {
+    background: #2d2d4a;
+}
+
+:root.dark .detail-bevinding {
+    background: #252545;
+}
+
+:root.dark .detail-stelling {
+    border-bottom-color: #2d2d4a;
+}
+
+:root.dark .detail-categorie h4 {
+    border-bottom-color: #2d2d4a;
+}
+
+:root.dark #btn-prev {
+    background: #1e1e35;
+    color: #b0b0cc;
+    border-color: #3a3a5c;
+}
+
+:root.dark #btn-prev:hover {
+    border-color: #4a9eff;
+    color: #4a9eff;
+}
+
+:root.dark .scorecard-overzicht {
+    background: #1e1e35;
+}
+
+:root.dark .scorecard-sidebar {
+    background: #252545;
+    border-left-color: #2d2d4a;
+}
+
+:root.dark .scorecard-uitleg-item,
+:root.dark .scorecard-tip {
+    background: #1e1e35;
+}
+
+:root.dark .scorecard-categorie {
+    border-bottom-color: #2d2d4a;
+}
+
+:root.dark .scorecard-stelling-tekst {
+    color: #e8e8f0;
+}
+
+:root.dark .stelling-toelichting {
+    color: #b0b0cc;
+}
+
+:root.dark .score-beschrijving {
+    color: #b0b0cc;
+}
+
+:root.dark .intro-description,
+:root.dark .totaal-beschrijving,
+:root.dark .conclusie-sectie p {
+    color: #b0b0cc;
+}
+
+/* Print Styles */
+@media print {
+    .app-header, .progress-container, .wizard-nav, .export-buttons {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        font-size: 10pt;
+    }
+
+    .wizard-main {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .resultaat-section {
+        gap: 0;
+    }
+
+    /* Scorecard als eerste pagina */
+    .scorecard-overzicht {
+        page-break-after: always;
+        box-shadow: none;
+        border: 1px solid var(--grijs-300);
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+
+    .scorecard-header {
+        padding: 16px 24px;
+    }
+
+    .scorecard-titel h1 {
+        font-size: 1.4rem;
+    }
+
+    .scorecard-weer {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .scorecard-weer.selected {
+        opacity: 1 !important;
+    }
+
+    .scorecard-range, .scorecard-uitleg-item, .scorecard-nr,
+    .scorecard-totaal-box, .scorecard-header {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* Rest van rapport */
+    .resultaat-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .resultaat-header, .resultaat-chart, .resultaat-totaal,
+    .score-tabel, .detail-scores, .conclusie-sectie {
+        box-shadow: none;
+        border: 1px solid var(--grijs-300);
+        break-inside: avoid;
+        margin-bottom: 12px;
+    }
+
+    .detail-stelling {
+        break-inside: avoid;
+    }
+
+    .detail-categorie {
+        break-inside: avoid;
+    }
+
+    .score-bar-container, .score-bar, .detail-score-badge, .totaal-score-card {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .categorie-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .resultaat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .score-buttons {
+        flex-direction: column;
+    }
+
+    .score-btn {
+        flex-direction: row;
+        min-width: unset;
+    }
+
+    .stelling-card {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .progress-step .step-label {
+        display: none;
+    }
+}

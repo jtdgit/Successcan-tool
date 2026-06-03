@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFAS Successcan | Beheerscan</title>
+    <link rel="stylesheet" href="css/nulmeting.css">
+</head>
+<body>
+    <header class="app-header">
+        <div>
+            <div class="logo">AFAS Successcan</div>
+            <div class="subtitle">Beheerscan — Nulmeting beheerorganisatie</div>
+        </div>
+        <button class="darkmode-toggle" onclick="Beheerscan.toggleDarkMode()" title="Donkere modus">
+            <span class="darkmode-icon">🌙</span>
+        </button>
+    </header>
+
+    <nav class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step active" onclick="Beheerscan.goToStep(0)">
+                    <div class="step-circle">①</div>
+                    <span class="step-label">Start</span>
+                </div>
+                <div class="progress-step" onclick="Beheerscan.goToStep(1)">
+                    <div class="step-circle">🏗️</div>
+                    <span class="step-label">Structuur</span>
+                </div>
+                <div class="progress-step" onclick="Beheerscan.goToStep(2)">
+                    <div class="step-circle">🎓</div>
+                    <span class="step-label">Capaciteit</span>
+                </div>
+                <div class="progress-step" onclick="Beheerscan.goToStep(3)">
+                    <div class="step-circle">⚙️</div>
+                    <span class="step-label">Sturing</span>
+                </div>
+                <div class="progress-step" onclick="Beheerscan.goToStep(4)">
+                    <div class="step-circle">🚀</div>
+                    <span class="step-label">Ambitie</span>
+                </div>
+                <div class="progress-step" onclick="Beheerscan.goToStep(5)">
+                    <div class="step-circle">📊</div>
+                    <span class="step-label">Resultaat</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="wizard-main">
+        <div id="wizard-content"></div>
+    </main>
+
+    <footer class="wizard-nav">
+        <button class="btn-nav" id="btn-prev" onclick="Beheerscan.prevStep()">← Vorige</button>
+        <button class="btn-nav" id="btn-next" onclick="Beheerscan.nextStep()">Volgende →</button>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/nulmeting.js"></script>
+</body>
+</html>
