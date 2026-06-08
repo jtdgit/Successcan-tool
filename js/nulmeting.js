@@ -346,10 +346,10 @@ const Beheerscan = (() => {
 
                 <div class="export-buttons">
                     <button class="btn-export btn-pdf" onclick="Beheerscan.exportScorecard()">
-                        📊 Exporteer Scorecard (overzicht)
+                        📊 Exporteer Scorecard (PDF)
                     </button>
                     <button class="btn-export btn-pdf btn-advies" onclick="Beheerscan.exportAdvies()">
-                        📄 Exporteer Adviesrapport
+                        📝 Exporteer Adviesrapport (Word)
                     </button>
                 </div>
             </div>
@@ -484,10 +484,103 @@ const Beheerscan = (() => {
     }
 
     function exportAdvies() {
-        document.body.classList.add('print-advies');
-        document.body.classList.remove('print-scorecard');
-        window.print();
-        setTimeout(() => document.body.classList.remove('print-advies'), 500);
+        const resultaten = berekenResultaten();
+        const klantNaam = state.klantNaam || 'Onbekend';
+        const datum = state.datum;
+
+        // Bouw Word-compatible HTML op
+        let html = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office"
+                  xmlns:w="urn:schemas-microsoft-com:office:word"
+                  xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: Calibri, sans-serif; font-size: 11pt; color: #212121; line-height: 1.5; margin: 2cm; }
+                    h1 { font-size: 20pt; color: #005FAA; margin-bottom: 4pt; }
+                    h2 { font-size: 14pt; color: #005FAA; margin-top: 18pt; margin-bottom: 6pt; border-bottom: 2px solid #005FAA; padding-bottom: 4pt; }
+                    h3 { font-size: 12pt; color: #333; margin-top: 14pt; margin-bottom: 4pt; }
+                    p { margin: 4pt 0; }
+                    table { border-collapse: collapse; width: 100%; margin: 10pt 0; }
+                    th { background-color: #005FAA; color: white; padding: 6pt 10pt; text-align: left; font-size: 9pt; }
+                    td { padding: 6pt 10pt; border-bottom: 1px solid #E0E0E0; font-size: 9pt; }
+                    .meta { color: #616161; font-size: 10pt; margin-bottom: 16pt; }
+                    .stelling-header { margin-top: 12pt; margin-bottom: 4pt; }
+                    .stelling-titel { font-weight: bold; font-size: 10.5pt; }
+                    .score-badge { padding: 2pt 8pt; border-radius: 10pt; font-size: 9pt; font-weight: bold; }
+                    .score-0 { background-color: #FFEBEE; color: #E53935; }
+                    .score-1 { background-color: #FFF3E0; color: #FF9800; }
+                    .score-2 { background-color: #E8F5E9; color: #43A047; }
+                    .bevinding { background-color: #F5F5F5; padding: 6pt 10pt; margin: 4pt 0; border-radius: 4pt; font-size: 9.5pt; }
+                    .aanbeveling-lijst { margin: 4pt 0 4pt 20pt; }
+                    .aanbeveling-lijst li { margin-bottom: 3pt; font-size: 9.5pt; }
+                    .conclusie { border-left: 4px solid #005FAA; padding: 10pt 14pt; background-color: #F5F5F5; margin-top: 16pt; }
+                    .categorie-header { color: white; padding: 6pt 12pt; margin-top: 16pt; font-size: 11pt; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <h1>AFAS Successcan | Adviesrapport Beheerscan</h1>
+                <p class="meta"><strong>${klantNaam}</strong> &nbsp;|&nbsp; ${datum}</p>
+                <p class="meta">Totaalscore: <strong>${resultaten.totaalScore} / ${BeheerscanData.maxScore}</strong> (${resultaten.percentage}%) — ${resultaten.niveau.label}</p>
+
+                <h2>Scores per categorie</h2>
+                <table>
+                    <tr><th>Categorie</th><th>Score</th><th>Max</th><th>Percentage</th></tr>
+                    ${resultaten.perCategorie.map(r => `
+                        <tr>
+                            <td>${r.icoon} ${r.naam}</td>
+                            <td>${r.score}</td>
+                            <td>${r.max}</td>
+                            <td>${r.percentage}%</td>
+                        </tr>
+                    `).join('')}
+                </table>
+
+                <h2>Uitkomsten per stelling</h2>
+                ${BeheerscanData.categorieen.map(cat => {
+                    const catResult = resultaten.perCategorie.find(r => r.id === cat.id);
+                    return `
+                        <div class="categorie-header" style="background-color: ${cat.kleur};">${cat.icoon} ${cat.naam} (${catResult.score}/${catResult.max})</div>
+                        ${cat.stellingen.map(st => {
+                            const score = state.scores[st.id];
+                            const scoreLabel = score === 2 ? '☀️ Zonnig' : score === 1 ? '⛅ Bewolkt' : '🌧️ Regenachtig';
+                            const scoreClass = 'score-' + (score !== undefined ? score : 0);
+                            const bevinding = getBevindingFormatted(st.id);
+                            return `
+                                <div class="stelling-header">
+                                    <span class="stelling-titel">${st.titel}</span>
+                                    &nbsp;<span class="score-badge ${scoreClass}">${scoreLabel} (${score !== undefined ? score : '?'}/2)</span>
+                                </div>
+                                ${bevinding ? `<div class="bevinding"><strong>Bevindingen:</strong> ${escapeHtml(bevinding)}</div>` : ''}
+                                ${score !== undefined && score < 2 ? `
+                                    <p><strong>Aanbevelingen:</strong></p>
+                                    <ul class="aanbeveling-lijst">
+                                        ${st.aanbevelingen.map(a => `<li>${a}</li>`).join('')}
+                                    </ul>
+                                ` : ''}
+                            `;
+                        }).join('')}
+                    `;
+                }).join('')}
+
+                <div class="conclusie">
+                    <h3>Conclusie</h3>
+                    <p>${BeheerscanData.getConclusie(resultaten.percentage)}</p>
+                </div>
+            </body>
+            </html>
+        `;
+
+        // Download als .docx
+        const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Adviesrapport Beheerscan - ${klantNaam} - ${datum.replace(/\//g, '-')}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 
     // Navigation
