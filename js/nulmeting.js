@@ -571,12 +571,12 @@ const Beheerscan = (() => {
             </html>
         `;
 
-        // Download als .docx
-        const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        // Download als .doc (Word HTML format)
+        const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Adviesrapport Beheerscan - ${klantNaam} - ${datum.replace(/\//g, '-')}.docx`;
+        a.download = `Adviesrapport Beheerscan - ${klantNaam} - ${datum.replace(/\//g, '-')}.doc`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
