@@ -253,6 +253,34 @@ const Beheerscan = (() => {
                         <div class="scorecard-range oranje">8 – 14 punten = <strong>Aandacht:</strong> verbeteren &amp; versterken</div>
                         <div class="scorecard-range groen">15 – 22 punten = <strong>Sterk fundament,</strong> doorontwikkelen</div>
                     </div>
+
+                    <!-- Compacte samenvatting onder scorecard (alleen zichtbaar bij scorecard print) -->
+                    <div class="scorecard-samenvatting">
+                        <div class="scorecard-sam-grid">
+                            <div class="scorecard-sam-chart">
+                                <canvas id="radar-chart-mini" width="240" height="240"></canvas>
+                            </div>
+                            <div class="scorecard-sam-score">
+                                <div class="sam-percentage" style="color: ${resultaten.niveau.kleur}">${resultaten.percentage}%</div>
+                                <div class="sam-label">${resultaten.niveau.label}</div>
+                                <div class="sam-punten">${resultaten.totaalScore} / ${BeheerscanData.maxScore} punten</div>
+                            </div>
+                            <div class="scorecard-sam-tabel">
+                                <table>
+                                    <thead><tr><th>Categorie</th><th>Score</th><th>%</th></tr></thead>
+                                    <tbody>
+                                        ${resultaten.perCategorie.map(r => `
+                                            <tr>
+                                                <td>${r.icoon} ${r.naam}</td>
+                                                <td>${r.score}/${r.max}</td>
+                                                <td><span class="sam-bar" style="background: ${getBarColor(r.percentage)}">${r.percentage}%</span></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Bestaande rapport content -->
@@ -356,7 +384,10 @@ const Beheerscan = (() => {
         `;
 
         // Render radar chart
-        setTimeout(() => renderRadarChart(resultaten), 100);
+        setTimeout(() => {
+            renderRadarChart(resultaten);
+            renderRadarChartMini(resultaten);
+        }, 100);
     }
 
     function berekenResultaten() {
@@ -467,6 +498,76 @@ const Beheerscan = (() => {
             const y = center + labelRadius * Math.sin(angle);
             ctx.fillText(cat.naam, x, y);
             ctx.fillText(`${cat.percentage}%`, x, y + 14);
+        });
+    }
+
+    function renderRadarChartMini(resultaten) {
+        const canvas = document.getElementById('radar-chart-mini');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const size = canvas.width;
+        const center = size / 2;
+        const radius = size * 0.32;
+        const categories = resultaten.perCategorie;
+        const n = categories.length;
+
+        ctx.clearRect(0, 0, size, size);
+
+        // Grid
+        for (let level = 1; level <= 5; level++) {
+            const r = (radius / 5) * level;
+            ctx.beginPath();
+            ctx.strokeStyle = '#E0E0E0';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= n; i++) {
+                const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                const x = center + r * Math.cos(angle);
+                const y = center + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        // Axes
+        for (let i = 0; i < n; i++) {
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            ctx.beginPath();
+            ctx.strokeStyle = '#BDBDBD';
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(center, center);
+            ctx.lineTo(center + radius * Math.cos(angle), center + radius * Math.sin(angle));
+            ctx.stroke();
+        }
+
+        // Data
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(0, 95, 170, 0.2)';
+        ctx.strokeStyle = '#005FAA';
+        ctx.lineWidth = 2;
+        categories.forEach((cat, i) => {
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            const value = cat.percentage / 100;
+            const x = center + radius * value * Math.cos(angle);
+            const y = center + radius * value * Math.sin(angle);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Labels
+        ctx.font = '9px "Open Sans", sans-serif';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        categories.forEach((cat, i) => {
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            const labelRadius = radius + 20;
+            const x = center + labelRadius * Math.cos(angle);
+            const y = center + labelRadius * Math.sin(angle);
+            ctx.fillText(cat.naam, x, y);
         });
     }
 

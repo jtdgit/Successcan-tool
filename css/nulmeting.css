@@ -733,6 +733,87 @@ body {
     line-height: 1.4;
 }
 
+/* Scorecard Samenvatting (onder scorecard, alleen zichtbaar bij print) */
+.scorecard-samenvatting {
+    display: none;
+}
+
+/* Scorecard Samenvatting print styles */
+@media print {
+    .print-scorecard .scorecard-samenvatting {
+        display: block !important;
+        padding: 12px 16px 8px;
+        border-top: 2px solid #E0E0E0;
+    }
+
+    .scorecard-sam-grid {
+        display: grid;
+        grid-template-columns: 200px 140px 1fr;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .scorecard-sam-chart canvas {
+        display: block;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .scorecard-sam-score {
+        text-align: center;
+    }
+
+    .sam-percentage {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 900;
+        font-size: 2.2rem;
+        line-height: 1;
+    }
+
+    .sam-label {
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-top: 4px;
+    }
+
+    .sam-punten {
+        font-size: 0.65rem;
+        color: #9E9E9E;
+    }
+
+    .scorecard-sam-tabel table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.65rem;
+    }
+
+    .scorecard-sam-tabel th {
+        text-align: left;
+        font-size: 0.58rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #9E9E9E;
+        padding: 2px 6px;
+        border-bottom: 1px solid #E0E0E0;
+    }
+
+    .scorecard-sam-tabel td {
+        padding: 3px 6px;
+        border-bottom: 1px solid #F5F5F5;
+    }
+
+    .sam-bar {
+        display: inline-block;
+        padding: 1px 6px;
+        border-radius: 8px;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
 /* Footer met score-ranges */
 .scorecard-footer {
     display: grid;
