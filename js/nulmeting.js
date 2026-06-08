@@ -3,19 +3,78 @@
  * Wizard logica voor invullen en rapportgeneratie
  */
 const Beheerscan = (() => {
+    const STORAGE_KEY = 'beheerscan-scans';
+
     const state = {
-        currentStep: 0, // 0 = intro, 1-4 = categorieën, 5 = resultaat
+        scanId: null,     // unieke ID voor deze scan
+        currentStep: 0,   // 0 = intro, 1-4 = categorieën, 5 = resultaat
         klantNaam: '',
+        relatienummer: '',
         datum: new Date().toLocaleDateString('nl-NL'),
         scores: {},       // { stellingId: 0|1|2 }
         bevindingen: {},  // { stellingId: 'tekst' }
         totalSteps: 6     // intro + 4 cats + resultaat
     };
 
+    // === LocalStorage functies ===
+    function getAllScans() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        } catch { return []; }
+    }
+
+    function saveScan() {
+        if (!state.scanId) return;
+        const scans = getAllScans();
+        const idx = scans.findIndex(s => s.scanId === state.scanId);
+        const scanData = {
+            scanId: state.scanId,
+            klantNaam: state.klantNaam,
+            relatienummer: state.relatienummer,
+            datum: state.datum,
+            scores: { ...state.scores },
+            bevindingen: { ...state.bevindingen },
+            currentStep: state.currentStep,
+            laatstGewijzigd: new Date().toISOString()
+        };
+        if (idx >= 0) scans[idx] = scanData;
+        else scans.push(scanData);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(scans));
+    }
+
+    function loadScan(scanId) {
+        const scans = getAllScans();
+        const scan = scans.find(s => s.scanId === scanId);
+        if (!scan) return false;
+        state.scanId = scan.scanId;
+        state.klantNaam = scan.klantNaam || '';
+        state.relatienummer = scan.relatienummer || '';
+        state.datum = scan.datum || new Date().toLocaleDateString('nl-NL');
+        state.scores = scan.scores || {};
+        state.bevindingen = scan.bevindingen || {};
+        state.currentStep = scan.currentStep || 0;
+        return true;
+    }
+
+    function deleteScan(scanId) {
+        const scans = getAllScans().filter(s => s.scanId !== scanId);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(scans));
+    }
+
+    function nieuweScan() {
+        state.scanId = 'scan-' + Date.now();
+        state.currentStep = 0;
+        state.klantNaam = '';
+        state.relatienummer = '';
+        state.datum = new Date().toLocaleDateString('nl-NL');
+        state.scores = {};
+        state.bevindingen = {};
+    }
+
+    // === Init ===
     function init() {
         initDarkMode();
-        renderStep();
-        updateProgressBar();
+        renderScanOverzicht();
     }
 
     function renderStep() {
@@ -35,7 +94,81 @@ const Beheerscan = (() => {
             setTimeout(() => container.classList.remove('step-enter'), 300);
             updateProgressBar();
             updateNavButtons();
+            showWizardUI(true);
         }, 200);
+    }
+
+    function renderScanOverzicht() {
+        showWizardUI(false);
+        const container = document.getElementById('wizard-content');
+        const scans = getAllScans();
+
+        container.innerHTML = `
+            <div class="intro-section scan-overzicht-page">
+                <div class="intro-header">
+                    <div class="intro-icon">📋</div>
+                    <h2>AFAS Successcan | Beheerscan</h2>
+                    <p class="intro-description">Start een nieuwe scan of hervat een eerder opgeslagen scan.</p>
+                </div>
+
+                <button class="btn-nieuwe-scan" onclick="Beheerscan.startNieuweScan()">
+                    ➕ Nieuwe scan starten
+                </button>
+
+                ${scans.length > 0 ? `
+                    <div class="opgeslagen-scans">
+                        <h3>Opgeslagen scans</h3>
+                        <div class="scan-lijst">
+                            ${scans.sort((a, b) => new Date(b.laatstGewijzigd) - new Date(a.laatstGewijzigd)).map(scan => {
+                                const voortgang = Math.round((Object.keys(scan.scores || {}).length / 11) * 100);
+                                return `
+                                    <div class="scan-item">
+                                        <div class="scan-item-info">
+                                            <strong>${scan.klantNaam || 'Naamloos'}</strong>
+                                            <span class="scan-item-meta">
+                                                ${scan.relatienummer ? `Rel. ${scan.relatienummer} • ` : ''}
+                                                ${scan.datum} • ${voortgang}% ingevuld
+                                            </span>
+                                        </div>
+                                        <div class="scan-item-acties">
+                                            <button class="btn-scan-open" onclick="Beheerscan.openScan('${scan.scanId}')">
+                                                ${voortgang === 100 ? '📊 Bekijk' : '✏️ Hervat'}
+                                            </button>
+                                            <button class="btn-scan-delete" onclick="Beheerscan.verwijderScan('${scan.scanId}')">🗑️</button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    function showWizardUI(show) {
+        const nav = document.querySelector('.wizard-nav');
+        const progress = document.querySelector('.progress-container');
+        if (nav) nav.style.display = show ? '' : 'none';
+        if (progress) progress.style.display = show ? '' : 'none';
+    }
+
+    function startNieuweScan() {
+        nieuweScan();
+        renderStep();
+    }
+
+    function openScan(scanId) {
+        if (loadScan(scanId)) {
+            renderStep();
+        }
+    }
+
+    function verwijderScan(scanId) {
+        if (confirm('Weet je zeker dat je deze scan wilt verwijderen?')) {
+            deleteScan(scanId);
+            renderScanOverzicht();
+        }
     }
 
     function renderIntro(container) {
@@ -45,6 +178,11 @@ const Beheerscan = (() => {
                     <div class="intro-icon">📋</div>
                     <h2>AFAS Successcan | Beheerscan</h2>
                     <p class="intro-description">${BeheerscanData.introductie}</p>
+                </div>
+                <div class="form-group">
+                    <label for="relatienummer">Verkooprelatienummer</label>
+                    <input type="text" id="relatienummer" placeholder="Bijv. 12345" 
+                           value="${state.relatienummer}" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="klant-naam">Klantnaam</label>
@@ -72,11 +210,17 @@ const Beheerscan = (() => {
             </div>
         `;
 
+        document.getElementById('relatienummer').addEventListener('input', e => {
+            state.relatienummer = e.target.value;
+            saveScan();
+        });
         document.getElementById('klant-naam').addEventListener('input', e => {
             state.klantNaam = e.target.value;
+            saveScan();
         });
         document.getElementById('scan-datum').addEventListener('change', e => {
             state.datum = new Date(e.target.value).toLocaleDateString('nl-NL');
+            saveScan();
         });
     }
 
@@ -110,6 +254,7 @@ const Beheerscan = (() => {
                     // Show score description
                     const descEl = container.querySelector(`[data-stelling="${stelling.id}"] .score-beschrijving`);
                     if (descEl) descEl.textContent = stelling.scoreBeschrijvingen[score];
+                    saveScan();
                 });
             });
 
@@ -118,6 +263,7 @@ const Beheerscan = (() => {
                 textarea.addEventListener('input', e => {
                     state.bevindingen[stelling.id] = e.target.value;
                     autoResize(e.target);
+                    saveScan();
                 });
             }
         });
@@ -699,6 +845,7 @@ const Beheerscan = (() => {
         }
         if (state.currentStep < 5) {
             state.currentStep++;
+            saveScan();
             renderStep();
         }
     }
@@ -706,12 +853,14 @@ const Beheerscan = (() => {
     function prevStep() {
         if (state.currentStep > 0) {
             state.currentStep--;
+            saveScan();
             renderStep();
         }
     }
 
     function goToStep(step) {
         state.currentStep = step;
+        saveScan();
         renderStep();
     }
 
@@ -844,7 +993,7 @@ const Beheerscan = (() => {
     }
 
     // Public API
-    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode };
+    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode, startNieuweScan, openScan, verwijderScan };
 })();
 
 document.addEventListener('DOMContentLoaded', () => Beheerscan.init());

@@ -282,6 +282,117 @@ body {
     color: var(--grijs-700);
 }
 
+/* Scan Overzicht Page */
+.btn-nieuwe-scan {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin: 24px 0;
+    background: var(--afas-blauw);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-nieuwe-scan:hover {
+    background: var(--afas-blauw-donker);
+    box-shadow: var(--shadow-md);
+}
+
+.opgeslagen-scans h3 {
+    font-size: 1rem;
+    color: var(--grijs-700);
+    margin-bottom: 12px;
+}
+
+.scan-lijst {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scan-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--grijs-100);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--grijs-200);
+    transition: all var(--transition);
+}
+
+.scan-item:hover {
+    border-color: var(--afas-blauw);
+    box-shadow: var(--shadow-sm);
+}
+
+.scan-item-info strong {
+    display: block;
+    font-size: 0.95rem;
+}
+
+.scan-item-meta {
+    font-size: 0.8rem;
+    color: var(--grijs-500);
+}
+
+.scan-item-acties {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-scan-open {
+    padding: 8px 16px;
+    background: var(--afas-blauw);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-scan-open:hover {
+    background: var(--afas-blauw-donker);
+}
+
+.btn-scan-delete {
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--grijs-300);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all var(--transition);
+}
+
+.btn-scan-delete:hover {
+    border-color: var(--rood);
+    background: #FFEBEE;
+}
+
+/* Dark mode overrides for scan overview */
+:root.dark .scan-item {
+    background: #252545;
+    border-color: #3a3a5c;
+}
+
+:root.dark .btn-scan-delete {
+    border-color: #3a3a5c;
+}
+
+:root.dark .btn-scan-delete:hover {
+    background: #3d1515;
+}
+
 .categorie-cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
