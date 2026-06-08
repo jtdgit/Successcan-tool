@@ -1242,6 +1242,10 @@ body {
         margin: 10mm;
     }
 
+    body.print-scorecard {
+        margin: 3mm !important;
+    }
+
     .wizard-main {
         max-width: 100%;
         padding: 0;
@@ -1450,11 +1454,26 @@ body {
     }
 
     .print-scorecard .scorecard-overzicht {
-        page-break-after: avoid;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        border: none;
     }
 
     .print-scorecard .resultaat-section {
-        display: block;
+        display: block !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .print-scorecard .wizard-main {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .print-scorecard #wizard-content {
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     /* === PRINT MODE: Alleen Adviesrapport === */
