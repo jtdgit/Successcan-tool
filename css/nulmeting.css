@@ -1243,7 +1243,10 @@ body {
     }
 
     body.print-scorecard {
-        margin: 3mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        height: auto !important;
     }
 
     .wizard-main {
@@ -1474,6 +1477,13 @@ body {
     .print-scorecard #wizard-content {
         margin: 0 !important;
         padding: 0 !important;
+    }
+
+    html.print-scorecard,
+    html.print-scorecard body {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
     }
 
     /* === PRINT MODE: Alleen Adviesrapport === */

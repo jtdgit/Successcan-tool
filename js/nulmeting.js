@@ -477,10 +477,14 @@ const Beheerscan = (() => {
     }
 
     function exportScorecard() {
+        document.documentElement.classList.add('print-scorecard');
         document.body.classList.add('print-scorecard');
         document.body.classList.remove('print-advies');
         window.print();
-        setTimeout(() => document.body.classList.remove('print-scorecard'), 500);
+        setTimeout(() => {
+            document.documentElement.classList.remove('print-scorecard');
+            document.body.classList.remove('print-scorecard');
+        }, 500);
     }
 
     function exportAdvies() {
