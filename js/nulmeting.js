@@ -94,12 +94,14 @@ const Beheerscan = (() => {
             setTimeout(() => container.classList.remove('step-enter'), 300);
             updateProgressBar();
             updateNavButtons();
+            updateStamkaartButton();
             showWizardUI(true);
         }, 200);
     }
 
     function renderScanOverzicht() {
         showWizardUI(false);
+        updateStamkaartButton();
         const container = document.getElementById('wizard-content');
         const scans = getAllScans();
 
@@ -213,6 +215,7 @@ const Beheerscan = (() => {
         document.getElementById('relatienummer').addEventListener('input', e => {
             state.relatienummer = e.target.value;
             saveScan();
+            updateStamkaartButton();
         });
         document.getElementById('klant-naam').addEventListener('input', e => {
             state.klantNaam = e.target.value;
@@ -992,8 +995,26 @@ const Beheerscan = (() => {
         }
     }
 
+    function openStamkaart() {
+        if (state.relatienummer) {
+            window.open('https://32772.afasinsite.nl/verkooprelatie-organisatie-prs?DbId=' + encodeURIComponent(state.relatienummer), '_blank');
+        }
+    }
+
+    function updateStamkaartButton() {
+        const btn = document.getElementById('btn-stamkaart');
+        if (!btn) return;
+        if (state.relatienummer && state.relatienummer.trim()) {
+            btn.disabled = false;
+            btn.title = 'Open stamkaart in AFAS InSite';
+        } else {
+            btn.disabled = true;
+            btn.title = 'Vul eerst een verkooprelatienummer in';
+        }
+    }
+
     // Public API
-    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode, startNieuweScan, openScan, verwijderScan };
+    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode, startNieuweScan, openScan, verwijderScan, openStamkaart };
 })();
 
 document.addEventListener('DOMContentLoaded', () => Beheerscan.init());
