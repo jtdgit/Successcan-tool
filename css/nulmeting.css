@@ -1460,6 +1460,9 @@ body {
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
         border: none;
+        transform: scale(0.92);
+        transform-origin: top left;
+        width: 108%;
     }
 
     .print-scorecard .resultaat-section {
