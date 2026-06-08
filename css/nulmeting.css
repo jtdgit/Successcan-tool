@@ -812,6 +812,22 @@ body {
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
     }
+
+    .scorecard-sam-conclusie {
+        margin-top: 10px;
+        padding: 8px 12px;
+        border-left: 3px solid #005FAA;
+        background: #F5F5F5;
+        font-size: 0.65rem;
+        line-height: 1.4;
+        color: #333;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .scorecard-sam-conclusie strong {
+        color: #005FAA;
+    }
 }
 
 /* Footer met score-ranges */

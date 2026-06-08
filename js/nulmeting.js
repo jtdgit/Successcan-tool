@@ -280,6 +280,9 @@ const Beheerscan = (() => {
                                 </table>
                             </div>
                         </div>
+                        <div class="scorecard-sam-conclusie">
+                            <strong>Conclusie:</strong> ${BeheerscanData.getConclusie(resultaten.percentage)}
+                        </div>
                     </div>
                 </div>
 
