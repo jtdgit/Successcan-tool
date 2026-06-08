@@ -1249,6 +1249,7 @@ body {
     /* Scorecard als eerste pagina */
     .scorecard-overzicht {
         page-break-after: always;
+        page-break-inside: avoid;
         box-shadow: none;
         border: 1px solid var(--grijs-300);
         border-radius: 0;
@@ -1256,11 +1257,137 @@ body {
     }
 
     .scorecard-header {
-        padding: 16px 24px;
+        padding: 10px 20px;
     }
 
     .scorecard-titel h1 {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .scorecard-subtitel {
+        font-size: 0.7rem;
+    }
+
+    .scorecard-legenda-top {
+        font-size: 0.65rem;
+        gap: 8px;
+    }
+
+    .legenda-icoon {
+        font-size: 0.9rem;
+    }
+
+    .scorecard-totaal-box {
+        padding: 6px 14px;
+    }
+
+    .scorecard-totaal-label {
+        font-size: 0.6rem;
+    }
+
+    .scorecard-totaal-waarde {
+        font-size: 1.3rem;
+    }
+
+    .scorecard-body {
+        grid-template-columns: 1fr 180px;
+    }
+
+    .scorecard-stellingen {
+        padding: 10px 16px;
+    }
+
+    .scorecard-categorie {
+        grid-template-columns: 140px 1fr;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+    }
+
+    .scorecard-cat-icoon {
+        font-size: 1.1rem;
+    }
+
+    .scorecard-cat-label strong {
+        font-size: 0.62rem;
+    }
+
+    .scorecard-cat-stellingen {
+        gap: 2px;
+    }
+
+    .scorecard-stelling-row {
+        padding: 2px 0;
+    }
+
+    .scorecard-nr {
+        width: 18px;
+        height: 18px;
+        font-size: 0.6rem;
+    }
+
+    .scorecard-stelling-tekst {
+        font-size: 0.68rem;
+    }
+
+    .scorecard-weer {
+        font-size: 1rem;
+    }
+
+    .scorecard-weer-iconen {
+        gap: 4px;
+    }
+
+    .scorecard-sidebar {
+        padding: 10px 12px;
+    }
+
+    .scorecard-sidebar h4 {
+        font-size: 0.7rem;
+        margin-bottom: 8px;
+    }
+
+    .scorecard-uitleg {
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .scorecard-uitleg-item {
+        padding: 5px 6px;
+        gap: 6px;
+    }
+
+    .uitleg-icoon {
+        font-size: 1rem;
+    }
+
+    .scorecard-uitleg-item strong {
+        font-size: 0.58rem;
+    }
+
+    .scorecard-uitleg-item p {
+        font-size: 0.58rem;
+    }
+
+    .scorecard-tip {
+        padding: 6px 8px;
+    }
+
+    .scorecard-tip strong {
+        font-size: 0.62rem;
+    }
+
+    .scorecard-tip p {
+        font-size: 0.58rem;
+    }
+
+    .scorecard-footer {
+        border-top-width: 1px;
+    }
+
+    .scorecard-range {
+        padding: 6px 10px;
+        font-size: 0.62rem;
     }
 
     .scorecard-weer {
