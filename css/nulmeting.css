@@ -1261,6 +1261,10 @@ body {
         margin-bottom: 0;
     }
 
+    .print-scorecard .scorecard-overzicht {
+        page-break-after: avoid !important;
+    }
+
     .scorecard-header {
         padding: 10px 20px;
     }
@@ -1447,6 +1451,10 @@ body {
 
     .print-scorecard .scorecard-overzicht {
         page-break-after: avoid;
+    }
+
+    .print-scorecard .resultaat-section {
+        display: block;
     }
 
     /* === PRINT MODE: Alleen Adviesrapport === */
