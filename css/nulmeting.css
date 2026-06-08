@@ -1052,6 +1052,14 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+.btn-advies {
+    background: #2E7D32;
+}
+
+.btn-advies:hover {
+    background: #1B5E20;
+}
+
 /* Validation Toast */
 .validation-toast {
     position: fixed;
@@ -1294,6 +1302,24 @@ body {
     .score-bar-container, .score-bar, .detail-score-badge, .totaal-score-card {
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
+    }
+
+    /* === PRINT MODE: Alleen Scorecard === */
+    .print-scorecard .resultaat-header,
+    .print-scorecard .resultaat-grid,
+    .print-scorecard .score-tabel,
+    .print-scorecard .detail-scores,
+    .print-scorecard .conclusie-sectie {
+        display: none !important;
+    }
+
+    .print-scorecard .scorecard-overzicht {
+        page-break-after: avoid;
+    }
+
+    /* === PRINT MODE: Alleen Adviesrapport === */
+    .print-advies .scorecard-overzicht {
+        display: none !important;
     }
 }
 

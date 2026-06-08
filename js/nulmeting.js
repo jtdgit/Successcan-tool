@@ -343,8 +343,11 @@ const Beheerscan = (() => {
                 </div>
 
                 <div class="export-buttons">
-                    <button class="btn-export btn-pdf" onclick="Beheerscan.exportPDF()">
-                        📄 Exporteer als PDF
+                    <button class="btn-export btn-pdf" onclick="Beheerscan.exportScorecard()">
+                        📊 Exporteer Scorecard (overzicht)
+                    </button>
+                    <button class="btn-export btn-pdf btn-advies" onclick="Beheerscan.exportAdvies()">
+                        📄 Exporteer Adviesrapport
                     </button>
                 </div>
             </div>
@@ -466,7 +469,23 @@ const Beheerscan = (() => {
     }
 
     function exportPDF() {
+        // Fallback: print alles
+        document.body.classList.remove('print-scorecard', 'print-advies');
         window.print();
+    }
+
+    function exportScorecard() {
+        document.body.classList.add('print-scorecard');
+        document.body.classList.remove('print-advies');
+        window.print();
+        setTimeout(() => document.body.classList.remove('print-scorecard'), 500);
+    }
+
+    function exportAdvies() {
+        document.body.classList.add('print-advies');
+        document.body.classList.remove('print-scorecard');
+        window.print();
+        setTimeout(() => document.body.classList.remove('print-advies'), 500);
     }
 
     // Navigation
@@ -622,7 +641,7 @@ const Beheerscan = (() => {
     }
 
     // Public API
-    return { init, nextStep, prevStep, goToStep, exportPDF, toggleDarkMode };
+    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode };
 })();
 
 document.addEventListener('DOMContentLoaded', () => Beheerscan.init());
