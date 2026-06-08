@@ -22,6 +22,8 @@ const Beheerscan = (() => {
         const container = document.getElementById('wizard-content');
         container.classList.add('step-exit');
 
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
         setTimeout(() => {
             switch (state.currentStep) {
                 case 0: renderIntro(container); break;

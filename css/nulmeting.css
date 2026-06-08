@@ -1228,6 +1228,10 @@ body {
 
 /* Print Styles */
 @media print {
+    @page {
+        margin: 0;
+    }
+
     .app-header, .progress-container, .wizard-nav, .export-buttons {
         display: none !important;
     }
@@ -1235,6 +1239,7 @@ body {
     body {
         background: white;
         font-size: 10pt;
+        margin: 10mm;
     }
 
     .wizard-main {
