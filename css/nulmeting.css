@@ -61,9 +61,8 @@
     font-size: 1.2rem;
 }
 
-/* Stamkaart Button */
-.btn-stamkaart {
-    margin-left: auto;
+/* Header Buttons */
+.btn-header {
     padding: 8px 16px;
     background: rgba(255,255,255,0.15);
     color: white;
@@ -77,14 +76,18 @@
     white-space: nowrap;
 }
 
-.btn-stamkaart:hover:not(:disabled) {
+.btn-header:hover:not(:disabled) {
     background: rgba(255,255,255,0.25);
     border-color: rgba(255,255,255,0.6);
 }
 
-.btn-stamkaart:disabled {
+.btn-header:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+.btn-home {
+    margin-left: auto;
 }
 
 body {

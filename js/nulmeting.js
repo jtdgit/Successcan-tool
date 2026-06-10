@@ -1014,7 +1014,11 @@ const Beheerscan = (() => {
     }
 
     // Public API
-    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode, startNieuweScan, openScan, verwijderScan, openStamkaart };
+    function naarOverzicht() {
+        renderScanOverzicht();
+    }
+
+    return { init, nextStep, prevStep, goToStep, exportPDF, exportScorecard, exportAdvies, toggleDarkMode, startNieuweScan, openScan, verwijderScan, openStamkaart, naarOverzicht };
 })();
 
 document.addEventListener('DOMContentLoaded', () => Beheerscan.init());
