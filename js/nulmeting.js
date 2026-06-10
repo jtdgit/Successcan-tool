@@ -745,85 +745,170 @@ const Beheerscan = (() => {
         const klantNaam = state.klantNaam || 'Onbekend';
         const datum = state.datum;
 
-        // Bouw Word-compatible HTML op
+        const navyDark = '#2B3544';
+        const afasBlauw = '#005FAA';
+        const lichtGrijs = '#F0F4F7';
+
+        // Bouw Word-compatible HTML op in AFAS huisstijl
         let html = `
             <html xmlns:o="urn:schemas-microsoft-com:office:office"
                   xmlns:w="urn:schemas-microsoft-com:office:word"
                   xmlns="http://www.w3.org/TR/REC-html40">
             <head>
                 <meta charset="utf-8">
+                <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
                 <style>
-                    body { font-family: Calibri, sans-serif; font-size: 11pt; color: #212121; line-height: 1.5; margin: 2cm; }
-                    h1 { font-size: 20pt; color: #005FAA; margin-bottom: 4pt; }
-                    h2 { font-size: 14pt; color: #005FAA; margin-top: 18pt; margin-bottom: 6pt; border-bottom: 2px solid #005FAA; padding-bottom: 4pt; }
-                    h3 { font-size: 12pt; color: #333; margin-top: 14pt; margin-bottom: 4pt; }
+                    @page { margin: 0; }
+                    @page cover { mso-header-margin: 0; mso-footer-margin: 0; margin: 0; }
+                    @page content { margin: 2cm 2cm 2.5cm 2cm; mso-footer-margin: 1cm; }
+                    body { font-family: 'Roboto', 'Segoe UI', Calibri, sans-serif; font-size: 10.5pt; color: #212121; line-height: 1.6; margin: 0; }
+                    
+                    /* Voorblad */
+                    .cover-page { page: cover; text-align: center; padding: 0; margin: 0; }
+                    .cover-logo { margin-top: 60pt; margin-bottom: 30pt; }
+                    .cover-logo span { font-family: 'Roboto', Arial, sans-serif; font-size: 28pt; font-weight: 900; font-style: italic; color: ${afasBlauw}; }
+                    .cover-logo sub { font-size: 14pt; font-style: italic; color: ${afasBlauw}; vertical-align: baseline; }
+                    .cover-title-block { text-align: left; padding: 30pt 50pt; margin-top: 40pt; border-right: 4pt solid ${afasBlauw}; margin-right: 50pt; }
+                    .cover-title { font-family: 'Roboto', sans-serif; font-size: 26pt; font-weight: 900; color: ${afasBlauw}; margin: 0 0 4pt 0; }
+                    .cover-klant { font-family: 'Roboto', sans-serif; font-size: 22pt; font-weight: 900; color: #1a1a1a; margin: 0 0 20pt 0; }
+                    .cover-subtitle { font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 300; color: ${afasBlauw}; margin: 0; }
+
+                    /* Content pagina's */
+                    .content-page { page: content; }
+                    .section-header { background-color: ${navyDark}; color: white; padding: 14pt 20pt; font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 900; margin: 0 -2cm; padding-left: 2cm; padding-right: 2cm; margin-bottom: 20pt; }
+                    
+                    h1 { font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 900; color: #1a1a1a; margin-top: 20pt; margin-bottom: 6pt; }
+                    h2 { font-family: 'Roboto', sans-serif; font-size: 13pt; font-weight: 300; color: #333; margin-top: 0; margin-bottom: 12pt; }
+                    h3 { font-family: 'Roboto', sans-serif; font-size: 11pt; font-weight: 700; color: #1a1a1a; margin-top: 16pt; margin-bottom: 4pt; }
+                    
                     p { margin: 4pt 0; }
-                    table { border-collapse: collapse; width: 100%; margin: 10pt 0; }
-                    th { background-color: #005FAA; color: white; padding: 6pt 10pt; text-align: left; font-size: 9pt; }
-                    td { padding: 6pt 10pt; border-bottom: 1px solid #E0E0E0; font-size: 9pt; }
-                    .meta { color: #616161; font-size: 10pt; margin-bottom: 16pt; }
-                    .stelling-header { margin-top: 12pt; margin-bottom: 4pt; }
-                    .stelling-titel { font-weight: bold; font-size: 10.5pt; }
-                    .score-badge { padding: 2pt 8pt; border-radius: 10pt; font-size: 9pt; font-weight: bold; }
-                    .score-0 { background-color: #FFEBEE; color: #E53935; }
-                    .score-1 { background-color: #FFF3E0; color: #FF9800; }
-                    .score-2 { background-color: #E8F5E9; color: #43A047; }
-                    .bevinding { background-color: #F5F5F5; padding: 6pt 10pt; margin: 4pt 0; border-radius: 4pt; font-size: 9.5pt; }
-                    .aanbeveling-lijst { margin: 4pt 0 4pt 20pt; }
+                    
+                    /* Tabellen */
+                    table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
+                    .tabel-label { color: ${afasBlauw}; font-size: 9pt; font-weight: 600; padding: 4pt 0 2pt 0; }
+                    td { padding: 5pt 10pt; font-size: 9.5pt; vertical-align: top; }
+                    .tabel-row { border-bottom: 1px solid #E0E0E0; }
+                    .tabel-row td { padding: 8pt 10pt; }
+                    
+                    /* Score styling */
+                    .score-cel { text-align: center; width: 80pt; }
+                    .score-0 { background-color: #FFEBEE; color: #E53935; padding: 3pt 8pt; font-weight: 700; font-size: 9pt; }
+                    .score-1 { background-color: #FFF3E0; color: #EF6C00; padding: 3pt 8pt; font-weight: 700; font-size: 9pt; }
+                    .score-2 { background-color: #E8F5E9; color: #2E7D32; padding: 3pt 8pt; font-weight: 700; font-size: 9pt; }
+                    
+                    .bevinding { background-color: ${lichtGrijs}; padding: 8pt 12pt; margin: 6pt 0; font-size: 9.5pt; line-height: 1.5; }
+                    .aanbeveling-lijst { margin: 4pt 0 4pt 18pt; }
                     .aanbeveling-lijst li { margin-bottom: 3pt; font-size: 9.5pt; }
-                    .conclusie { border-left: 4px solid #005FAA; padding: 10pt 14pt; background-color: #F5F5F5; margin-top: 16pt; }
-                    .categorie-header { color: white; padding: 6pt 12pt; margin-top: 16pt; font-size: 11pt; font-weight: bold; }
+                    
+                    /* Afsluitend */
+                    .closing-bg { background-color: ${lichtGrijs}; padding: 30pt 2cm; margin: 0 -2cm; }
+                    .groet { color: ${afasBlauw}; font-size: 11pt; font-weight: 300; margin-top: 40pt; }
+                    
+                    /* Footer */
+                    .page-footer { border-top: 0; background-color: ${navyDark}; color: #ccc; font-size: 8pt; padding: 8pt 20pt; margin: 0 -2cm; margin-top: 20pt; }
+                    .page-footer table { width: 100%; }
+                    .page-footer td { color: #ccc; font-size: 8pt; padding: 2pt 4pt; border: 0; }
+                    
+                    /* Page breaks */
+                    .page-break { page-break-before: always; }
+                    
+                    /* Separator */
+                    .separator { border: 0; border-top: 1px solid #ccc; margin: 16pt 0; }
                 </style>
             </head>
             <body>
-                <h1>AFAS Successcan | Adviesrapport Beheerscan</h1>
-                <p class="meta"><strong>${klantNaam}</strong> &nbsp;|&nbsp; ${datum}</p>
-                <p class="meta">Totaalscore: <strong>${resultaten.totaalScore} / ${BeheerscanData.maxScore}</strong> (${resultaten.percentage}%) — ${resultaten.niveau.label}</p>
+                <!-- VOORBLAD -->
+                <div class="cover-page">
+                    <div class="cover-logo">
+                        <span>AFAS</span><br><sub>software</sub>
+                    </div>
+                    <div style="height: 200pt;">&nbsp;</div>
+                    <div class="cover-title-block">
+                        <p class="cover-title">Successcan</p>
+                        <p class="cover-klant">${escapeHtml(klantNaam)}</p>
+                        <p class="cover-subtitle">Aanbevelingenrapport</p>
+                    </div>
+                </div>
 
-                <h2>Scores per categorie</h2>
-                <table>
-                    <tr><th>Categorie</th><th>Score</th><th>Max</th><th>Percentage</th></tr>
-                    ${resultaten.perCategorie.map(r => `
-                        <tr>
-                            <td>${r.icoon} ${r.naam}</td>
-                            <td>${r.score}</td>
-                            <td>${r.max}</td>
-                            <td>${r.percentage}%</td>
+                <!-- PAGINA 2: SCORECARD -->
+                <div class="content-page page-break">
+                    <div class="section-header">Scorecard</div>
+                    
+                    <h1>Resultaten Beheerscan</h1>
+                    <h2>${escapeHtml(klantNaam)} — ${datum}</h2>
+                    
+                    <p style="margin-bottom: 14pt;">
+                        <span class="tabel-label">Totaalscore</span><br>
+                        <strong style="font-size: 14pt;">${resultaten.totaalScore} / ${BeheerscanData.maxScore}</strong> 
+                        <span style="color: #616161;">(${resultaten.percentage}%) — ${resultaten.niveau.label}</span>
+                    </p>
+                    
+                    <table>
+                        <tr class="tabel-row" style="border-bottom: 2px solid ${afasBlauw};">
+                            <td><span class="tabel-label">Categorie</span></td>
+                            <td class="score-cel"><span class="tabel-label">Score</span></td>
+                            <td class="score-cel"><span class="tabel-label">Max</span></td>
+                            <td class="score-cel"><span class="tabel-label">%</span></td>
                         </tr>
-                    `).join('')}
-                </table>
+                        ${resultaten.perCategorie.map(r => `
+                            <tr class="tabel-row">
+                                <td><strong>${r.icoon} ${r.naam}</strong></td>
+                                <td class="score-cel">${r.score}</td>
+                                <td class="score-cel">${r.max}</td>
+                                <td class="score-cel">${r.percentage}%</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    
+                    <hr class="separator">
+                </div>
 
-                <h2>Uitkomsten per stelling</h2>
+                <!-- DETAIL PAGINA'S PER CATEGORIE -->
                 ${BeheerscanData.categorieen.map(cat => {
                     const catResult = resultaten.perCategorie.find(r => r.id === cat.id);
                     return `
-                        <div class="categorie-header" style="background-color: ${cat.kleur};">${cat.icoon} ${cat.naam} (${catResult.score}/${catResult.max})</div>
-                        ${cat.stellingen.map(st => {
-                            const score = state.scores[st.id];
-                            const scoreLabel = score === 2 ? '☀️ Zonnig' : score === 1 ? '⛅ Bewolkt' : '🌧️ Regenachtig';
-                            const scoreClass = 'score-' + (score !== undefined ? score : 0);
-                            const bevinding = getBevindingFormatted(st.id);
-                            return `
-                                <div class="stelling-header">
-                                    <span class="stelling-titel">${st.titel}</span>
-                                    &nbsp;<span class="score-badge ${scoreClass}">${scoreLabel} (${score !== undefined ? score : '?'}/2)</span>
-                                </div>
-                                ${bevinding ? `<div class="bevinding"><strong>Bevindingen:</strong> ${escapeHtml(bevinding)}</div>` : ''}
-                                ${score !== undefined && score < 2 ? `
-                                    <p><strong>Aanbevelingen:</strong></p>
-                                    <ul class="aanbeveling-lijst">
-                                        ${st.aanbevelingen.map(a => `<li>${a}</li>`).join('')}
-                                    </ul>
-                                ` : ''}
-                            `;
-                        }).join('')}
+                <div class="content-page page-break">
+                    <div class="section-header">${cat.icoon} ${cat.naam}</div>
+                    
+                    <h1>${cat.naam}</h1>
+                    <h2>Score: ${catResult.score} / ${catResult.max} (${catResult.percentage}%)</h2>
+                    
+                    ${cat.stellingen.map(st => {
+                        const score = state.scores[st.id];
+                        const scoreLabel = score === 2 ? '☀️ Zonnig' : score === 1 ? '⛅ Bewolkt' : '🌧️ Regenachtig';
+                        const scoreClass = 'score-' + (score !== undefined ? score : 0);
+                        const bevinding = getBevindingFormatted(st.id);
+                        return `
+                    <h3>${st.titel}</h3>
+                    <p><span class="${scoreClass}">${scoreLabel} (${score !== undefined ? score : '?'}/2)</span></p>
+                    ${bevinding ? `<div class="bevinding">${escapeHtml(bevinding)}</div>` : ''}
+                    ${score !== undefined && score < 2 ? `
+                    <p><span class="tabel-label">Aanbevelingen:</span></p>
+                    <ul class="aanbeveling-lijst">
+                        ${st.aanbevelingen.map(a => `<li>${a}</li>`).join('')}
+                    </ul>
+                    ` : ''}
+                    <hr class="separator">
+                        `;
+                    }).join('')}
+                </div>
                     `;
                 }).join('')}
 
-                <div class="conclusie">
-                    <h3>Conclusie</h3>
-                    <p>${BeheerscanData.getConclusie(resultaten.percentage)}</p>
+                <!-- AFSLUITEND -->
+                <div class="content-page page-break">
+                    <div class="section-header">Afsluitend</div>
+                    
+                    <div class="closing-bg">
+                        <h1>Conclusie</h1>
+                        <p>${BeheerscanData.getConclusie(resultaten.percentage)}</p>
+                        
+                        <p class="groet">Met vriendelijke groet,</p>
+                        <p style="margin-top: 30pt;"><strong>AFAS Software</strong><br>
+                        <span style="color: #616161;">Inspiratielaan 1, 3833 AV Leusden</span></p>
+                    </div>
                 </div>
+
             </body>
             </html>
         `;
