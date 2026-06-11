@@ -765,10 +765,10 @@ const Beheerscan = (() => {
                     
                     /* Voorblad */
                     .cover-page { page: cover; text-align: center; padding: 0; margin: 0; }
-                    .cover-logo { margin-top: 60pt; margin-bottom: 30pt; }
+                    .cover-logo { margin-top: 30pt; margin-bottom: 10pt; }
                     .cover-logo span { font-family: 'Roboto', Arial, sans-serif; font-size: 28pt; font-weight: 900; font-style: italic; color: ${afasBlauw}; }
                     .cover-logo sub { font-size: 14pt; font-style: italic; color: ${afasBlauw}; vertical-align: baseline; }
-                    .cover-title-block { text-align: left; padding: 30pt 50pt; margin-top: 40pt; border-right: 4pt solid ${afasBlauw}; margin-right: 50pt; }
+                    .cover-title-block { text-align: left; padding: 20pt 50pt; margin-top: 10pt; border-right: 4pt solid ${afasBlauw}; margin-right: 50pt; }
                     .cover-title { font-family: 'Roboto', sans-serif; font-size: 26pt; font-weight: 900; color: ${afasBlauw}; margin: 0 0 4pt 0; }
                     .cover-klant { font-family: 'Roboto', sans-serif; font-size: 22pt; font-weight: 900; color: #1a1a1a; margin: 0 0 20pt 0; }
                     .cover-subtitle { font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 300; color: ${afasBlauw}; margin: 0; }
@@ -813,7 +813,7 @@ const Beheerscan = (() => {
                     .page-break { page-break-before: always; mso-break-type: section-break; }
                     
                     /* Cover afbeelding */
-                    .cover-image { width: 90%; max-width: 500pt; margin: 0 auto; display: block; }
+                    .cover-image { width: 100%; max-width: 420pt; height: auto; margin: 0 auto; display: block; }
                     
                     /* Separator */
                     .separator { border: 0; border-top: 1px solid #ccc; margin: 16pt 0; }
@@ -825,7 +825,7 @@ const Beheerscan = (() => {
                     <div class="cover-logo">
                         <span>AFAS</span><br><sub>software</sub>
                     </div>
-                    <div style="margin: 20pt auto;">
+                    <div style="margin: 10pt 30pt;">
                         <img class="cover-image" src="https://jtdgit.github.io/Successcan-tool/img/cover.jpg" alt="AFAS Successcan">
                     </div>
                     <div class="cover-title-block">
