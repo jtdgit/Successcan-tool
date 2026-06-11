@@ -775,7 +775,7 @@ const Beheerscan = (() => {
 
                     /* Content pagina's */
                     .content-page { page: content; }
-                    .section-header { background-color: ${navyDark}; color: white; padding: 14pt 20pt; font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 900; margin: 0 -2cm; padding-left: 2cm; padding-right: 2cm; margin-bottom: 20pt; }
+                    .section-header { background-color: ${navyDark}; color: white; padding: 20pt 20pt 20pt 2cm; font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 900; margin: 0 -2cm; padding-right: 2cm; margin-bottom: 24pt; line-height: 1.4; }
                     
                     h1 { font-family: 'Roboto', sans-serif; font-size: 16pt; font-weight: 900; color: #1a1a1a; margin-top: 20pt; margin-bottom: 6pt; }
                     h2 { font-family: 'Roboto', sans-serif; font-size: 13pt; font-weight: 300; color: #333; margin-top: 0; margin-bottom: 12pt; }
@@ -810,7 +810,10 @@ const Beheerscan = (() => {
                     .page-footer td { color: #ccc; font-size: 8pt; padding: 2pt 4pt; border: 0; }
                     
                     /* Page breaks */
-                    .page-break { page-break-before: always; }
+                    .page-break { page-break-before: always; mso-break-type: section-break; }
+                    
+                    /* Cover afbeelding */
+                    .cover-image { width: 90%; max-width: 500pt; margin: 0 auto; display: block; }
                     
                     /* Separator */
                     .separator { border: 0; border-top: 1px solid #ccc; margin: 16pt 0; }
@@ -822,7 +825,9 @@ const Beheerscan = (() => {
                     <div class="cover-logo">
                         <span>AFAS</span><br><sub>software</sub>
                     </div>
-                    <div style="height: 200pt;">&nbsp;</div>
+                    <div style="margin: 20pt auto;">
+                        <img class="cover-image" src="https://jtdgit.github.io/Successcan-tool/img/cover.jpg" alt="AFAS Successcan">
+                    </div>
                     <div class="cover-title-block">
                         <p class="cover-title">Successcan</p>
                         <p class="cover-klant">${escapeHtml(klantNaam)}</p>
