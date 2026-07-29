@@ -13,6 +13,7 @@ const Beheerscan = (() => {
         datum: new Date().toLocaleDateString('nl-NL'),
         scores: {},       // { stellingId: 0|1|2 }
         bevindingen: {},  // { stellingId: 'tekst' }
+        algemeneOpmerkingen: '',
         totalSteps: 6     // intro + 4 cats + resultaat
     };
 
@@ -34,6 +35,7 @@ const Beheerscan = (() => {
             datum: state.datum,
             scores: { ...state.scores },
             bevindingen: { ...state.bevindingen },
+            algemeneOpmerkingen: state.algemeneOpmerkingen,
             currentStep: state.currentStep,
             laatstGewijzigd: new Date().toISOString()
         };
@@ -52,6 +54,7 @@ const Beheerscan = (() => {
         state.datum = scan.datum || new Date().toLocaleDateString('nl-NL');
         state.scores = scan.scores || {};
         state.bevindingen = scan.bevindingen || {};
+        state.algemeneOpmerkingen = scan.algemeneOpmerkingen || '';
         state.currentStep = scan.currentStep || 0;
         return true;
     }
@@ -69,6 +72,7 @@ const Beheerscan = (() => {
         state.datum = new Date().toLocaleDateString('nl-NL');
         state.scores = {};
         state.bevindingen = {};
+        state.algemeneOpmerkingen = '';
     }
 
     // === Init ===
@@ -229,6 +233,7 @@ const Beheerscan = (() => {
 
     function renderCategorie(container, catIndex) {
         const cat = BeheerscanData.categorieen[catIndex];
+        const isLaatsteInvulscherm = catIndex === BeheerscanData.categorieen.length - 1;
         container.innerHTML = `
             <div class="categorie-section">
                 <div class="categorie-header" style="border-color: ${cat.kleur}">
@@ -241,6 +246,18 @@ const Beheerscan = (() => {
                 <div class="stellingen-lijst">
                     ${cat.stellingen.map((stelling, idx) => renderStelling(stelling, idx, cat.kleur)).join('')}
                 </div>
+                ${isLaatsteInvulscherm ? `
+                    <div class="stelling-card">
+                        <div class="stelling-content">
+                            <h3 class="stelling-titel">Algemene opmerkingen</h3>
+                            <p class="stelling-toelichting">Ruimte voor aanvullende observaties, context of afspraken die niet bij een specifieke stelling horen.</p>
+                            <div class="bevindingen-sectie">
+                                <label for="algemene-opmerkingen">Opmerkingen</label>
+                                <textarea id="algemene-opmerkingen" placeholder="Voeg hier algemene opmerkingen toe..." rows="4">${state.algemeneOpmerkingen || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         `;
 
@@ -270,6 +287,18 @@ const Beheerscan = (() => {
                 });
             }
         });
+
+        if (isLaatsteInvulscherm) {
+            const algemeneOpmerkingen = document.getElementById('algemene-opmerkingen');
+            if (algemeneOpmerkingen) {
+                algemeneOpmerkingen.addEventListener('input', e => {
+                    state.algemeneOpmerkingen = e.target.value;
+                    autoResize(e.target);
+                    saveScan();
+                });
+                autoResize(algemeneOpmerkingen);
+            }
+        }
     }
 
     function renderStelling(stelling, idx, kleur) {
@@ -311,6 +340,7 @@ const Beheerscan = (() => {
 
     function renderResultaat(container) {
         const resultaten = berekenResultaten();
+        const algemeneOpmerkingen = prettifyTekst(state.algemeneOpmerkingen || '');
         let stellingNr = 0;
 
         container.innerHTML = `
@@ -523,6 +553,13 @@ const Beheerscan = (() => {
                     <h3>Conclusie</h3>
                     <p>${BeheerscanData.getConclusie(resultaten.percentage)}</p>
                 </div>
+
+                ${algemeneOpmerkingen ? `
+                    <div class="conclusie-sectie">
+                        <h3>Algemene opmerkingen</h3>
+                        <div class="detail-bevinding">${escapeHtml(algemeneOpmerkingen)}</div>
+                    </div>
+                ` : ''}
 
                 <div class="export-buttons">
                     <button class="btn-export btn-pdf" onclick="Beheerscan.exportScorecard()">
@@ -744,6 +781,7 @@ const Beheerscan = (() => {
         const resultaten = berekenResultaten();
         const klantNaam = state.klantNaam || 'Onbekend';
         const datum = state.datum;
+        const algemeneOpmerkingen = prettifyTekst(state.algemeneOpmerkingen || '');
 
         const navyDark = '#2B3544';
         const afasBlauw = '#005FAA';
@@ -866,6 +904,12 @@ const Beheerscan = (() => {
                     </table>
                     
                     <hr class="separator">
+
+                    ${algemeneOpmerkingen ? `
+                        <h3>Algemene opmerkingen</h3>
+                        <div class="bevinding">${escapeHtml(algemeneOpmerkingen)}</div>
+                        <hr class="separator">
+                    ` : ''}
                 </div>
 
                 <!-- DETAIL PAGINA'S PER CATEGORIE -->
