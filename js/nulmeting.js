@@ -7,14 +7,14 @@ const Beheerscan = (() => {
 
     const state = {
         scanId: null,     // unieke ID voor deze scan
-        currentStep: 0,   // 0 = intro, 1-4 = categorieën, 5 = resultaat
+        currentStep: 0,   // 0 = intro, 1-4 = categorieën, 5 = opmerkingen, 6 = resultaat
         klantNaam: '',
         relatienummer: '',
         datum: new Date().toLocaleDateString('nl-NL'),
         scores: {},       // { stellingId: 0|1|2 }
         bevindingen: {},  // { stellingId: 'tekst' }
         algemeneOpmerkingen: '',
-        totalSteps: 6     // intro + 4 cats + resultaat
+        totalSteps: 7     // intro + 4 cats + opmerkingen + resultaat
     };
 
     // === LocalStorage functies ===
@@ -90,7 +90,8 @@ const Beheerscan = (() => {
         setTimeout(() => {
             switch (state.currentStep) {
                 case 0: renderIntro(container); break;
-                case 5: renderResultaat(container); break;
+                case 5: renderAlgemeneOpmerkingen(container); break;
+                case 6: renderResultaat(container); break;
                 default: renderCategorie(container, state.currentStep - 1); break;
             }
             container.classList.remove('step-exit');
@@ -233,7 +234,6 @@ const Beheerscan = (() => {
 
     function renderCategorie(container, catIndex) {
         const cat = BeheerscanData.categorieen[catIndex];
-        const isLaatsteInvulscherm = catIndex === BeheerscanData.categorieen.length - 1;
         container.innerHTML = `
             <div class="categorie-section">
                 <div class="categorie-header" style="border-color: ${cat.kleur}">
@@ -246,18 +246,6 @@ const Beheerscan = (() => {
                 <div class="stellingen-lijst">
                     ${cat.stellingen.map((stelling, idx) => renderStelling(stelling, idx, cat.kleur)).join('')}
                 </div>
-                ${isLaatsteInvulscherm ? `
-                    <div class="stelling-card">
-                        <div class="stelling-content">
-                            <h3 class="stelling-titel">Algemene opmerkingen</h3>
-                            <p class="stelling-toelichting">Ruimte voor aanvullende observaties, context of afspraken die niet bij een specifieke stelling horen.</p>
-                            <div class="bevindingen-sectie">
-                                <label for="algemene-opmerkingen">Opmerkingen</label>
-                                <textarea id="algemene-opmerkingen" placeholder="Voeg hier algemene opmerkingen toe..." rows="4">${state.algemeneOpmerkingen || ''}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                ` : ''}
             </div>
         `;
 
@@ -287,18 +275,39 @@ const Beheerscan = (() => {
                 });
             }
         });
+    }
 
-        if (isLaatsteInvulscherm) {
-            const algemeneOpmerkingen = document.getElementById('algemene-opmerkingen');
-            if (algemeneOpmerkingen) {
-                algemeneOpmerkingen.addEventListener('input', e => {
-                    state.algemeneOpmerkingen = e.target.value;
-                    autoResize(e.target);
-                    saveScan();
-                });
-                autoResize(algemeneOpmerkingen);
-            }
-        }
+    function renderAlgemeneOpmerkingen(container) {
+        container.innerHTML = `
+            <div class="categorie-section">
+                <div class="categorie-header" style="border-color: #005FAA">
+                    <span class="cat-header-icon">📝</span>
+                    <div>
+                        <h2>Algemene opmerkingen</h2>
+                        <span class="cat-subtitle">Aanvullende observaties en context voor het adviesrapport</span>
+                    </div>
+                </div>
+                <div class="stelling-card">
+                    <div class="stelling-content">
+                        <p class="stelling-toelichting">Gebruik dit scherm voor opmerkingen die niet bij een specifieke stelling horen.</p>
+                        <div class="bevindingen-sectie">
+                            <label for="algemene-opmerkingen">Opmerkingen</label>
+                            <textarea id="algemene-opmerkingen" placeholder="Voeg hier algemene opmerkingen toe..." rows="8">${state.algemeneOpmerkingen || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const algemeneOpmerkingen = document.getElementById('algemene-opmerkingen');
+        if (!algemeneOpmerkingen) return;
+
+        algemeneOpmerkingen.addEventListener('input', e => {
+            state.algemeneOpmerkingen = e.target.value;
+            autoResize(e.target);
+            saveScan();
+        });
+        autoResize(algemeneOpmerkingen);
     }
 
     function renderStelling(stelling, idx, kleur) {
@@ -980,7 +989,7 @@ const Beheerscan = (() => {
             showValidation('Vul de klantnaam in om verder te gaan.');
             return;
         }
-        if (state.currentStep < 5) {
+        if (state.currentStep < 6) {
             state.currentStep++;
             saveScan();
             renderStep();
@@ -1019,11 +1028,11 @@ const Beheerscan = (() => {
         
         prevBtn.style.visibility = state.currentStep === 0 ? 'hidden' : 'visible';
         
-        if (state.currentStep === 5) {
+        if (state.currentStep === 6) {
             nextBtn.style.display = 'none';
         } else {
             nextBtn.style.display = '';
-            nextBtn.textContent = state.currentStep === 4 ? 'Bekijk resultaat →' : 'Volgende →';
+            nextBtn.textContent = state.currentStep === 5 ? 'Bekijk resultaat →' : 'Volgende →';
         }
     }
 
