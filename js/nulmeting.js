@@ -776,6 +776,8 @@ const Beheerscan = (() => {
     }
 
     function exportScorecard() {
+        if (!validateScoresVoorExport()) return;
+
         document.documentElement.classList.add('print-scorecard');
         document.body.classList.add('print-scorecard');
         document.body.classList.remove('print-advies');
@@ -787,6 +789,8 @@ const Beheerscan = (() => {
     }
 
     function exportAdvies() {
+        if (!validateScoresVoorExport()) return;
+
         const resultaten = berekenResultaten();
         const klantNaam = state.klantNaam || 'Onbekend';
         const datum = state.datum;
@@ -983,6 +987,30 @@ const Beheerscan = (() => {
         URL.revokeObjectURL(url);
     }
 
+    function getOningevuldeStellingen() {
+        const oningevuld = [];
+        BeheerscanData.categorieen.forEach(cat => {
+            cat.stellingen.forEach(st => {
+                if (state.scores[st.id] === undefined || state.scores[st.id] === null) {
+                    oningevuld.push(st);
+                }
+            });
+        });
+        return oningevuld;
+    }
+
+    function validateScoresVoorExport() {
+        const oningevuld = getOningevuldeStellingen();
+        if (oningevuld.length === 0) return true;
+
+        const aantalTekst = `${oningevuld.length} ${oningevuld.length === 1 ? 'stelling' : 'stellingen'}`;
+        const voorbeeld = oningevuld.slice(0, 2).map(st => st.titel).join(' • ');
+        const detail = `Nog ${aantalTekst} zonder score. Vul die eerst in, dan kan de export-raket vertrekken.\n${voorbeeld}`;
+
+        showValidation('Bijna klaar voor export!', detail, '🚀');
+        return false;
+    }
+
     // Navigation
     function nextStep() {
         if (state.currentStep === 0 && !state.klantNaam.trim()) {
@@ -1036,19 +1064,31 @@ const Beheerscan = (() => {
         }
     }
 
-    function showValidation(message) {
+    function showValidation(message, detail = '', icon = '⚠️') {
         const existing = document.querySelector('.validation-toast');
         if (existing) existing.remove();
 
         const toast = document.createElement('div');
         toast.className = 'validation-toast';
-        toast.textContent = message;
+
+        const title = document.createElement('div');
+        title.className = 'validation-toast-title';
+        title.textContent = `${icon} ${message}`;
+        toast.appendChild(title);
+
+        if (detail) {
+            const text = document.createElement('div');
+            text.className = 'validation-toast-text';
+            text.textContent = detail;
+            toast.appendChild(text);
+        }
+
         document.body.appendChild(toast);
         setTimeout(() => toast.classList.add('show'), 10);
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        }, detail ? 4200 : 3000);
     }
 
     // Helpers
