@@ -377,24 +377,61 @@ const Beheerscan = (() => {
             try {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
+                if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+                    throw new Error('Geen werkbladen in Excel-bestand gevonden');
+                }
+                
                 const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                 const rawData = XLSX.utils.sheet_to_json(worksheet);
+                
+                if (!rawData || rawData.length === 0) {
+                    throw new Error('Excel-bestand is leeg');
+                }
 
-                // Filter: alleen rijen waar "In Scope" === 1
+                // Detecteer kolom-headers (case-insensitive, trim whitespace)
+                const firstRow = rawData[0];
+                const headerMap = {};
+                
+                for (const key in firstRow) {
+                    const cleanKey = key.trim().toLowerCase();
+                    headerMap[key] = cleanKey;
+                }
+                
+                // Map de juiste kolomnamen
+                const kolommen = {
+                    proces: null,
+                    procesonderdeel: null,
+                    toelichting: null,
+                    inScope: null
+                };
+                
+                for (const key in headerMap) {
+                    const clean = headerMap[key];
+                    if (!kolommen.proces && clean.includes('proces') && !clean.includes('onderdeel')) kolommen.proces = key;
+                    if (!kolommen.procesonderdeel && clean.includes('onderdeel')) kolommen.procesonderdeel = key;
+                    if (!kolommen.toelichting && clean.includes('toelichting')) kolommen.toelichting = key;
+                    if (!kolommen.inScope && clean.includes('scope')) kolommen.inScope = key;
+                }
+                
+                if (!kolommen.proces || !kolommen.procesonderdeel || !kolommen.inScope) {
+                    throw new Error('Verplichte kolommen niet gevonden: Proces, Procesonderdeel, In Scope');
+                }
+
+                // Filter en map data
                 state.inrichtingsscanData = rawData
-                    .filter(row => Number(row['In Scope']) === 1)
+                    .filter(row => Number(row[kolommen.inScope]) === 1)
                     .map(row => ({
-                        proces: row['Proces'] || '',
-                        procesonderdeel: row['Procesonderdeel'] || '',
-                        toelichting: row['Toelichting proces/afwijkingen'] || ''
+                        proces: row[kolommen.proces] || '',
+                        procesonderdeel: row[kolommen.procesonderdeel] || '',
+                        toelichting: row[kolommen.toelichting] || ''
                     }));
 
                 saveScan();
                 renderStep(); // Refresh het scherm om de tabel te tonen
                 showValidation('Excel geladen!', `${state.inrichtingsscanData.length} items met "In Scope" = 1`, '✅');
             } catch (err) {
-                showValidation('Fout bij laden', 'Het Excel-bestand kon niet gelezen worden.', '❌');
-                console.error(err);
+                console.error('Excel parse error:', err);
+                showValidation('Fout bij laden', err.message || 'Het Excel-bestand kon niet gelezen worden.', '❌');
             }
         };
         reader.readAsArrayBuffer(file);
