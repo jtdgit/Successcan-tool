@@ -1022,7 +1022,10 @@ const Beheerscan = (() => {
                     .page-break { page-break-before: always; mso-break-type: section-break; }
                     
                     /* Cover afbeelding */
-                    .cover-image { width: 100%; max-width: 420pt; height: auto; margin: 0 auto; display: block; }
+                    .cover-image { width: 100%; max-width: 420pt; height: auto; margin: 0 auto; display: block; position: absolute; top: 0; left: 0; z-index: -1; mso-position-horizontal: center; mso-position-horizontal-relative: page; }
+                    
+                    /* Cover wrapper voor tekst over afbeelding */
+                    .cover-wrapper { position: relative; z-index: 1; }
                     
                     /* Separator */
                     .separator { border: 0; border-top: 1px solid #ccc; margin: 16pt 0; }
@@ -1030,17 +1033,20 @@ const Beheerscan = (() => {
             </head>
             <body>
                 <!-- VOORBLAD -->
-                <div class="cover-page">
-                    <div class="cover-logo">
-                        <span>AFAS</span><br><sub>software</sub>
-                    </div>
-                    <div style="margin: 10pt 30pt;">
-                        <img class="cover-image" src="https://jtdgit.github.io/Successcan-tool/img/cover.jpg" alt="AFAS Successcan">
-                    </div>
-                    <div class="cover-title-block">
-                        <p class="cover-title">Successcan</p>
-                        <p class="cover-klant">${escapeHtml(klantNaam)}</p>
-                        <p class="cover-subtitle">Aanbevelingenrapport</p>
+                <div class="cover-page" style="position: relative;">
+                    <img class="cover-image" src="https://jtdgit.github.io/Successcan-tool/img/cover.jpg" alt="AFAS Successcan" style="width: 100%; position: absolute; top: 0; left: 0; z-index: -1; mso-position-horizontal: center; mso-position-horizontal-relative: page;">
+                    <div class="cover-wrapper">
+                        <div class="cover-logo">
+                            <span>AFAS</span><br><sub>software</sub>
+                        </div>
+                        <div style="margin: 10pt 30pt; height: 280pt;">
+                            <!-- Lege ruimte voor plaatje achter tekst -->
+                        </div>
+                        <div class="cover-title-block">
+                            <p class="cover-title">Successcan</p>
+                            <p class="cover-klant">${escapeHtml(klantNaam)}</p>
+                            <p class="cover-subtitle">Aanbevelingenrapport</p>
+                        </div>
                     </div>
                 </div>
 
