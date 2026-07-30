@@ -7,14 +7,15 @@ const Beheerscan = (() => {
 
     const state = {
         scanId: null,     // unieke ID voor deze scan
-        currentStep: 0,   // 0 = intro, 1-4 = categorieën, 5 = opmerkingen, 6 = resultaat
+        currentStep: 0,   // 0 = intro, 1-4 = categorieën, 5 = opmerkingen, 6 = inrichting, 7 = resultaat
         klantNaam: '',
         relatienummer: '',
         datum: new Date().toLocaleDateString('nl-NL'),
         scores: {},       // { stellingId: 0|1|2 }
         bevindingen: {},  // { stellingId: 'tekst' }
         algemeneOpmerkingen: '',
-        totalSteps: 7     // intro + 4 cats + opmerkingen + resultaat
+        inrichtingsscanData: [],  // [ { proces, procesonderdeel, toelichting }, ... ]
+        totalSteps: 8     // intro + 4 cats + opmerkingen + inrichting + resultaat
     };
 
     // === LocalStorage functies ===
@@ -36,6 +37,7 @@ const Beheerscan = (() => {
             scores: { ...state.scores },
             bevindingen: { ...state.bevindingen },
             algemeneOpmerkingen: state.algemeneOpmerkingen,
+            inrichtingsscanData: [...state.inrichtingsscanData],
             currentStep: state.currentStep,
             laatstGewijzigd: new Date().toISOString()
         };
@@ -54,6 +56,7 @@ const Beheerscan = (() => {
         state.datum = scan.datum || new Date().toLocaleDateString('nl-NL');
         state.scores = scan.scores || {};
         state.bevindingen = scan.bevindingen || {};
+        state.inrichtingsscanData = scan.inrichtingsscanData || [];
         state.algemeneOpmerkingen = scan.algemeneOpmerkingen || '';
         state.currentStep = scan.currentStep || 0;
         return true;
@@ -72,6 +75,7 @@ const Beheerscan = (() => {
         state.datum = new Date().toLocaleDateString('nl-NL');
         state.scores = {};
         state.bevindingen = {};
+        state.inrichtingsscanData = [];
         state.algemeneOpmerkingen = '';
     }
 
@@ -91,7 +95,8 @@ const Beheerscan = (() => {
             switch (state.currentStep) {
                 case 0: renderIntro(container); break;
                 case 5: renderAlgemeneOpmerkingen(container); break;
-                case 6: renderResultaat(container); break;
+                case 6: renderInrichtingsScan(container); break;
+                case 7: renderResultaat(container); break;
                 default: renderCategorie(container, state.currentStep - 1); break;
             }
             container.classList.remove('step-exit');
@@ -308,6 +313,91 @@ const Beheerscan = (() => {
             saveScan();
         });
         autoResize(algemeneOpmerkingen);
+    }
+
+    function renderInrichtingsScan(container) {
+        const rows = state.inrichtingsscanData.map((row, idx) => `
+            <tr class="tabel-row">
+                <td>${escapeHtml(row.proces || '')}</td>
+                <td>${escapeHtml(row.procesonderdeel || '')}</td>
+                <td>${escapeHtml(row.toelichting || '')}</td>
+            </tr>
+        `).join('');
+
+        container.innerHTML = `
+            <div class="categorie-section">
+                <div class="categorie-header" style="border-color: #FF6F00">
+                    <span class="cat-header-icon">🔧</span>
+                    <div>
+                        <h2>Inrichtingsscan</h2>
+                        <span class="cat-subtitle">Adviezen voor inrichtingsverbeteringen (optioneel)</span>
+                    </div>
+                </div>
+                <div class="stelling-card">
+                    <div class="stelling-content">
+                        <p class="stelling-toelichting">Upload hier de Excel met inrichtingsadviezen van je consultant.</p>
+                        <div style="margin: 20px 0;">
+                            <label for="excel-upload" style="display: block; font-weight: 600; margin-bottom: 8px;">📊 Excel-bestand uploaden</label>
+                            <input type="file" id="excel-upload" accept=".xlsx,.xls" style="padding: 8px; border: 2px solid #ccc; border-radius: 6px; width: 100%; max-width: 400px;">
+                        </div>
+                        ${state.inrichtingsscanData.length > 0 ? `
+                            <div style="margin-top: 20px;">
+                                <h3>Geladen gegevens (${state.inrichtingsscanData.length} items)</h3>
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #005FAA; font-weight: 600;">Proces</th>
+                                            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #005FAA; font-weight: 600;">Procesonderdeel</th>
+                                            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #005FAA; font-weight: 600;">Toelichting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${rows}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : '<p style="margin-top: 20px; color: #999;">Nog geen Excel geladen. Dit onderdeel is optioneel.</p>'}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const excelInput = document.getElementById('excel-upload');
+        if (excelInput) {
+            excelInput.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (file) parseExcelInrichtingsScan(file);
+            });
+        }
+    }
+
+    function parseExcelInrichtingsScan(file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rawData = XLSX.utils.sheet_to_json(worksheet);
+
+                // Filter: alleen rijen waar "In Scope" === 1
+                state.inrichtingsscanData = rawData
+                    .filter(row => Number(row['In Scope']) === 1)
+                    .map(row => ({
+                        proces: row['Proces'] || '',
+                        procesonderdeel: row['Procesonderdeel'] || '',
+                        toelichting: row['Toelichting proces/afwijkingen'] || ''
+                    }));
+
+                saveScan();
+                renderStep(); // Refresh het scherm om de tabel te tonen
+                showValidation('Excel geladen!', `${state.inrichtingsscanData.length} items met "In Scope" = 1`, '✅');
+            } catch (err) {
+                showValidation('Fout bij laden', 'Het Excel-bestand kon niet gelezen worden.', '❌');
+                console.error(err);
+            }
+        };
+        reader.readAsArrayBuffer(file);
     }
 
     function renderStelling(stelling, idx, kleur) {
@@ -567,6 +657,30 @@ const Beheerscan = (() => {
                     <div class="conclusie-sectie">
                         <h3>Algemene opmerkingen</h3>
                         <div class="detail-bevinding">${escapeHtml(algemeneOpmerkingen)}</div>
+                    </div>
+                ` : ''}
+
+                ${state.inrichtingsscanData.length > 0 ? `
+                    <div class="conclusie-sectie">
+                        <h3>Inrichtingsadviezen</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f5f5f5;">
+                                    <th style="padding: 8px; text-align: left; border-bottom: 2px solid #005FAA; font-weight: 600;">Proces</th>
+                                    <th style="padding: 8px; text-align: left; border-bottom: 2px solid #005FAA; font-weight: 600;">Procesonderdeel</th>
+                                    <th style="padding: 8px; text-align: left; border-bottom: 2px solid #005FAA; font-weight: 600;">Toelichting</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${state.inrichtingsscanData.map(row => `
+                                    <tr style="border-bottom: 1px solid #ddd;">
+                                        <td style="padding: 6px 8px;"><strong>${escapeHtml(row.proces)}</strong></td>
+                                        <td style="padding: 6px 8px;">${escapeHtml(row.procesonderdeel)}</td>
+                                        <td style="padding: 6px 8px;">${escapeHtml(row.toelichting)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
                     </div>
                 ` : ''}
 
@@ -957,6 +1071,33 @@ const Beheerscan = (() => {
                     `;
                 }).join('')}
 
+                <!-- INRICHTINGSSCAN TABEL (als data beschikbaar) -->
+                ${state.inrichtingsscanData.length > 0 ? `
+                <div class="content-page page-break">
+                    <div class="section-header">Inrichtingsscan Adviezen</div>
+                    
+                    <h1>Inrichtingsadviezen</h1>
+                    <h2>Aanbevelingen van de consultant</h2>
+                    
+                    <table>
+                        <tr class="tabel-row" style="border-bottom: 2px solid ${afasBlauw};">
+                            <td><span class="tabel-label">Proces</span></td>
+                            <td><span class="tabel-label">Procesonderdeel</span></td>
+                            <td><span class="tabel-label">Toelichting</span></td>
+                        </tr>
+                        ${state.inrichtingsscanData.map(row => `
+                            <tr class="tabel-row">
+                                <td><strong>${escapeHtml(row.proces)}</strong></td>
+                                <td>${escapeHtml(row.procesonderdeel)}</td>
+                                <td>${escapeHtml(row.toelichting)}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    
+                    <hr class="separator">
+                </div>
+                ` : ''}
+
                 <!-- AFSLUITEND -->
                 <div class="content-page page-break">
                     <div class="section-header">Afsluitend</div>
@@ -1017,7 +1158,7 @@ const Beheerscan = (() => {
             showValidation('Vul de klantnaam in om verder te gaan.');
             return;
         }
-        if (state.currentStep < 6) {
+        if (state.currentStep < 7) {
             state.currentStep++;
             saveScan();
             renderStep();
@@ -1056,11 +1197,11 @@ const Beheerscan = (() => {
         
         prevBtn.style.visibility = state.currentStep === 0 ? 'hidden' : 'visible';
         
-        if (state.currentStep === 6) {
+        if (state.currentStep === 7) {
             nextBtn.style.display = 'none';
         } else {
             nextBtn.style.display = '';
-            nextBtn.textContent = state.currentStep === 5 ? 'Bekijk resultaat →' : 'Volgende →';
+            nextBtn.textContent = state.currentStep === 6 ? 'Bekijk resultaat →' : 'Volgende →';
         }
     }
 
