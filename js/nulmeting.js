@@ -372,6 +372,13 @@ const Beheerscan = (() => {
     }
 
     function parseExcelInrichtingsScan(file) {
+        // Check if XLSX is available
+        if (typeof XLSX === 'undefined') {
+            showValidation('XLSX bibliotheek niet geladen', 'Vernieuw de pagina (F5) en probeer opnieuw.', '❌');
+            console.error('XLSX library not available');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (evt) => {
             try {

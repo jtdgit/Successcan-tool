@@ -75,8 +75,34 @@
         <button class="btn-nav" id="btn-next" onclick="Beheerscan.nextStep()">Volgende →</button>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/nulmeting.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js" integrity="sha512-UhysLWaoNuHnlznMHUjIKmB+/jM5vHKK7nPh+2kWqnVzleHgSHktAWTawR5lWgb2ZhkNaQ5V5q7aF19fgJvAmQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // Fallback voor XLSX library
+        if (!window.XLSX) {
+            var fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js';
+            fallbackScript.onload = function() {
+                console.log('XLSX library loaded from fallback CDN');
+                loadApplicationScripts();
+            };
+            fallbackScript.onerror = function() {
+                console.error('Failed to load XLSX from any CDN');
+                loadApplicationScripts(); // Toch laden, zal error geven bij Excel upload
+            };
+            document.head.appendChild(fallbackScript);
+        } else {
+            loadApplicationScripts();
+        }
+        
+        function loadApplicationScripts() {
+            var data = document.createElement('script');
+            data.src = 'js/data.js';
+            document.head.appendChild(data);
+            
+            var app = document.createElement('script');
+            app.src = 'js/nulmeting.js';
+            document.head.appendChild(app);
+        }
+    </script>
 </body>
 </html>
